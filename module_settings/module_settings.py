@@ -1,6 +1,8 @@
 import configparser
 from os import getcwd, listdir
 from pickle import dump, load
+from typing import Callable
+
 
 settings_filename = 'settings.ini'
 settings_template_filename = 'module_settings\\config.template'
@@ -34,7 +36,7 @@ class Config_template:
 
 
 def set_template() -> None:
-    template = {"IDENTITY": {"user-agent": str, "proxy-list-fn": str}, "PROCESSES": {"max": int}}
+    template = {"IDENTITY": {"user-agent": str, "proxy-list-fn": str, 'max-retries': int}, "PROCESSES": {"max": int}}
     c = Config_template()
     c.set(template)
 
@@ -71,9 +73,31 @@ def is_correct(config: configparser.ConfigParser) -> bool:
 def get_default_config() -> configparser.ConfigParser:
     config = configparser.ConfigParser()
     config["IDENTITY"] = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 "
-                                        "Firefox/114.0", "proxy-list-fn": "http_proxy.txt"}
+                                        "Firefox/114.0", "proxy-list-fn": "http_proxy.txt", 'max-retries': '10'}
     config['PROCESSES'] = {'max': '5'}
     return config
+
+
+def get_working_proxy_list(count: int, filename_proxies_source: str, proxy_checker: Callable[[str], str], max_retries: int) -> list[dict[str, str]]:
+    res = []
+    amount=0
+    with open(filename_proxies_source) as f:
+        for line in f:
+            protocol = proxy_checker(line, max_retries)
+            if protocol is not None:
+                res.append({protocol: line})
+                amount+=1
+                if count<=amount:
+                    return res
+    return res
+
+
+def get_working_proxy(filename_proxies_source: str, proxy_checker: Callable[[str], str], max_retries: int) -> dict[str, str]:
+    with open(filename_proxies_source) as f:
+        for line in f:
+            protocol = proxy_checker(line, max_retries)
+            if protocol is not None:
+                yield {protocol: line}
 
 
 def before_start_app() -> configparser.ConfigParser:

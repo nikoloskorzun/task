@@ -1,1 +1,1 @@
-from .module_requests import r, check_proxy
+from .module_requests import get_array_with_news, check_proxy

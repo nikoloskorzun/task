@@ -26,6 +26,7 @@
 - Если есть проблемы с get запросом, попробуйте использовать UserAgent вашего браузера
 #### Additional
 - proxy valid checker
+- Вместо vpn используется http/https proxy.
 
 ### Модуль Selenium
 - Создаем сессию (имеющиеся Cookie, добавляем сессии)

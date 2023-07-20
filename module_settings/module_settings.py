@@ -36,7 +36,7 @@ class Config_template:
 
 
 def set_template() -> None:
-    template = {"IDENTITY": {"user-agent": str, "proxy-list-fn": str, 'max-retries': int}, "PROCESSES": {"max": int}}
+    template = {"IDENTITY": {"user-agent": str, "proxy-list-fn": str, 'max-retries': int, 'database-fn': str}, "PROCESSES": {"max": int}, "SELENIUM": {"firefox-options": str}}
     c = Config_template()
     c.set(template)
 
@@ -73,8 +73,10 @@ def is_correct(config: configparser.ConfigParser) -> bool:
 def get_default_config() -> configparser.ConfigParser:
     config = configparser.ConfigParser()
     config["IDENTITY"] = {"user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 "
-                                        "Firefox/114.0", "proxy-list-fn": "http_proxy.txt", 'max-retries': '10'}
+                                        "Firefox/114.0", "proxy-list-fn": "http_proxy.txt", 'max-retries': '10',
+                          'database-fn': 'Profile.db'}
     config['PROCESSES'] = {'max': '5'}
+    config["SELENIUM"] = {'firefox-options': '-headless'}
     return config
 
 

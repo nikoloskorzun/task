@@ -1,1 +1,1 @@
-from .module_sqlite import
+from .module_sqlite import *

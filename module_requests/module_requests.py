@@ -3,13 +3,15 @@ import requests
 from .parser import News_parser
 
 
-test_domain = {'http': 'http://httpbin.org/ip','https': 'https://httpbin.org/ip'}
+test_domain = {'http': 'http://httpbin.org/ip', 'https': 'https://httpbin.org/ip'}
 base_domain = 'https://news.google.com'
 
 
-def check_proxy(proxy_addr: str, max_retries: int) -> str:
+def check_proxy(proxy_addr: str, max_retries: int) -> str | None:
     """checks the proxy server for proper operation and returns operation mode
     :param proxy_addr: ip_addr:port, example:1.2.3.4:8080
+    :param max_retries: example:5
+
     :return: 'https' or 'http' or None
     """
 
@@ -34,7 +36,7 @@ def check_proxy(proxy_addr: str, max_retries: int) -> str:
     return None
 
 
-def get_array_with_news(user_agent: str, max_retries: int, proxy: dict[str, str] | None) -> list[str]:
+def get_array_with_news(user_agent: str, max_retries: int, proxy: dict[str, str] | None) -> tuple[list[str], requests.cookies.RequestsCookieJar] | None:
     header = {'User-agent': user_agent}
     try:
         s = requests.Session()
@@ -47,6 +49,6 @@ def get_array_with_news(user_agent: str, max_retries: int, proxy: dict[str, str]
         parser = News_parser()
         parser.set_base_url(base_domain)
         parser.feed(ans.text)
-        return parser.get_refs()
+        return parser.get_refs(), ans.cookies
     except Exception as e:
         pass
